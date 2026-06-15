@@ -97,6 +97,8 @@ class EventSystem:
                 self.pending_popup = evt
                 break
 
+    # Aggregated penalties:
+
     def total_solar_penalty(self) -> float:
         total = sum(e.solar_penalty for e in self.active_events)
         return min(total, 1.0)
