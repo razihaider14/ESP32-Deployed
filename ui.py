@@ -693,7 +693,7 @@ class DashboardUI:
             self.flash(msg, ACCENT_GREEN if "upgraded" in msg else ACCENT_RED)
 
         elif key == "upg_solar":
-            msg = node.uprage_solar()
+            msg = node.upgrade_solar()
             self.flash(msg, ACCENT_GREEN if "upgraded" in msg else ACCENT_RED)
 
         elif key == "upg_antenna":
