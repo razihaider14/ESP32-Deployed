@@ -379,6 +379,8 @@ class DashboardUI:
 
     def _section_header(self, s, text, y, color):
         P = CARD_PADDING
+        if y < TOPBAR_HEIGHT or y > self.H - 10:
+            return y + 18
         surf = Fonts.get(10, bold = True).render(text, True, color)
         s.blit(surf, (P + 8, y))
         pygame.draw.line(s, color, (P + 8+ surf.get_width() +6, y + 6), (SIDEBAR_WIDTH - P * 2, y +6), 1)
@@ -386,6 +388,8 @@ class DashboardUI:
     
     def _big_stat(self, s, value, subtitle, y, color):
         P = CARD_PADDING
+        if y < TOPBAR_HEIGHT or y > self.H - 10:
+            return y + 28
         v_surf = Fonts.get(22, bold = True).render(value, True, color)
         s.blit(v_surf, (P + 10, y))
         sub_surf = Fonts.get(11).render(subtitle, True, TEXT_MUTED)
@@ -394,6 +398,8 @@ class DashboardUI:
     
     def _progress_bar(self, s, pct, color, y):
         P = CARD_PADDING
+        if y < TOPBAR_HEIGHT or y > self.H - 10:
+            return y + 12
         bar_rect = pygame.Rect(P + 8, y, SIDEBAR_WIDTH - P * 2 - 16, 6)
         draw_rounded_rect(s, BAR_BG, bar_rect, radius = 3)
         fill_w = int(bar_rect.width * _clamp(pct, 0, 100) / 100)
@@ -403,6 +409,8 @@ class DashboardUI:
         
     def _label_row(self, s, label, value, y):
         P = CARD_PADDING
+        if y < TOPBAR_HEIGHT or y > self.H - 10:
+            return y + 16
         l_s = Fonts.get(11).render(label, True, TEXT_MUTED)
         v_s = Fonts.get(11).render(value, True, TEXT_SECONDARY)
         s.blit(l_s, (P + 10, y))
