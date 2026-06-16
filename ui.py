@@ -213,6 +213,14 @@ class DashboardUI:
         self._btn("settings", stg_rect)
         y += 40
 
+        # Quit button:
+        quit_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 - 8, 32)
+        draw_rounded_rect(s, (60, 20, 20), quit_rect, radius = 7, border = 1, border_color = ACCENT_RED)
+        qv = Fonts.get(13, bold = True).render("Quit Game", True, ACCENT_RED)
+        s.blit(qv, qv.get_rect(center = quit_rect.center))
+        self._btn("quit", quit_rect)
+        y += 40
+
         # Active events indicator:
         if node.events.active_events:
             evt_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 - 8, 32)
@@ -715,6 +723,11 @@ class DashboardUI:
         elif key == "event_panel":
             if node.events.active_events:
                 node.events.pending_popup = node.events.active_events[0]
+
+        elif key == "quit":
+            pygame.quit()
+            import sys
+            sys.exit()
 
         elif key == "restart":
             return "restart"
