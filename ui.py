@@ -170,12 +170,12 @@ class DashboardUI:
         # Storage:
         y = self._section_header(s, "STORAGE", y, ACCENT_ORANGE)
         sto_pct = node.storage_percent()
-        y = self._big_stat(s, f"{node.storage_used:.0f} MB", f"of {node.storage_max} MB", y, bar_color(sto_pct, reverse = True), y)
+        y = self._big_stat(s, f"{node.storage_used:.0f} MB", f"of {node.storage_max} MB", y, bar_color(sto_pct, reverse = True))
         y += 10
 
         # Data Quality:
         y = self._section_header(s, "DATA QUALITY", y, ACCENT_PURPLE)
-        y = self._big_stat(s, f"{node.data_quality:.1f}", "/ 100", y, bar_color(node.data_quality), y)
+        y = self._big_stat(s, f"{node.data_quality:.1f}", "/ 100", y, bar_color(node.data_quality))
         y += 10
 
         # Credits:
