@@ -76,7 +76,7 @@ class EventSystem:
         self.active_events.append(evt)
         if self.pending_popup is None:
             self.pending_popup = evt
-        label = "⚠ MAJOR" if evt.severity == "major" else "ℹ EVENT"
+        label = "[MAJOR]" if evt.severity == "major" else "[EVENT]"
         return f"{label}: {evt.name} - {evt.description}"
     
     def fix_event(self, event_id: str, credits: float) -> tuple[bool, float, str]:

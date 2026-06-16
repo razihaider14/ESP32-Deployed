@@ -115,7 +115,7 @@ class DashboardUI:
         s.blit(f_big.render(" Deployed", True, TEXT_PRIMARY), (16 + f_big.size("ESP32:")[0], 10))
 
         # Node name:
-        name_surf = Fonts.get(14, bold = True).render(f"✏️ {node.name}", True, ACCENT_YELLOW)
+        name_surf = Fonts.get(14, bold = True).render(f"[EDIT] {node.name}", True, ACCENT_YELLOW)
         name_rect = name_surf.get_rect(midleft = (170, TOPBAR_HEIGHT // 2))
         s.blit(name_surf, name_rect)
         self._btn("rename", name_rect.inflate(8, 6))
@@ -208,7 +208,7 @@ class DashboardUI:
         # Settings button:
         stg_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 -8, 32)
         draw_rounded_rect(s, BG_CARD, stg_rect, radius = 7, border = 1, border_color = BORDER_BRIGHT)
-        sv2 = Fonts.get(13, bold = True).render("⚙️ Settings", True, TEXT_PRIMARY)
+        sv2 = Fonts.get(13, bold = True).render("[SET] Settings", True, TEXT_PRIMARY)
         s.blit(sv2, sv2.get_rect(center = stg_rect.center))
         self._btn("settings", stg_rect)
         y += 40
@@ -218,7 +218,7 @@ class DashboardUI:
             evt_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 - 8, 32)
             draw_rounded_rect(s, (80, 30, 20), evt_rect, radius = 7, border = 1, border_color = ACCENT_RED)
             ec = len(node.events.active_events)
-            ev = Fonts.get(13, bold = True).render(f"⚠ {ec} Active Event{'s' if ec > 1 else ''}", True, ACCENT_RED)
+            ev = Fonts.get(13, bold = True).render(f"[!] {ec} Active Event{'s' if ec > 1 else ''}", True, ACCENT_RED)
             s.blit(ev, ev.get_rect(center = evt_rect.center))
             self._btn("events_panel", evt_rect)
 
@@ -351,9 +351,9 @@ class DashboardUI:
 
         for line in visible_lines:
             color = TEXT_SECONDARY
-            if "✓" in line:
+            if "[OK]" in line:
                 color = ACCENT_GREEN
-            elif "✗" in line or "⚠" in line:
+            elif "[FAIL]" in line or "[!]" in line:
                 color = ACCENT_YELLOW
             elif "MAJOR" in line:
                 color = ACCENT_RED
@@ -487,7 +487,7 @@ class DashboardUI:
         draw_rounded_rect(s, BG_CARD, popup, radius = 12, border = 1, border_color = BORDER_BRIGHT)
 
         x, y = px + 20, py + 18
-        s.blit(Fonts.get(15, bold = True).render("⚙️ Settings", True, TEXT_PRIMARY), (x, y))
+        s.blit(Fonts.get(15, bold = True).render("[SET] Settings", True, TEXT_PRIMARY), (x, y))
         y += 34
 
         def input_row(label, buf_key, cur_val):

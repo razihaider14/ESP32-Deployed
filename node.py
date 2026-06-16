@@ -152,10 +152,10 @@ class Node:
 
     def _do_sample(self):
         if self.storage_used >= self.storage_max:
-            self._log("⚠ Storage full - sampling skipped.")
+            self._log("[!] Storage full - sampling skipped.")
             return
         if self.battery_units <= SAMPLE_ENERGY_COST:
-            self._log("⚠ Low battery - sampling skipped.")
+            self._log("[!] Low battery - sampling skipped.")
             return
         
         self._drain_battery(SAMPLE_ENERGY_COST)
@@ -175,7 +175,7 @@ class Node:
         energy_cost = (UPLOAD_BASE_COST + UPLOAD_PER_MB_COST * mb_to_upload) * cost_mult
         
         if self.battery_units < energy_cost:
-            self._log("⚠ Not enough battery for upload.")
+            self._log("[!] Not enough battery for upload.")
             return
         
         self._drain_battery(energy_cost)
@@ -188,12 +188,12 @@ class Node:
             self.data_quality = min(DQ_MAX, self.data_quality + DQ_UPLOAD_SUCCESS_BONUS)
             self.storage_used = 0.0
             self.total_uploads_ok += 1
-            self._log(f"✓ Upload OK - {mb_to_upload:.0f} MB | + {reward:.2f} credits")
+            self._log(f"[OK] Upload OK - {mb_to_upload:.0f} MB | + {reward:.2f} credits")
         else:
             #Failure:
             self.data_quality = max(DQ_MIN, self.data_quality - DQ_UPLOAD_FAIL_PENALTY)
             self.total_uploads_fail += 1
-            self._log(f"✗ Upload failed - {mb_to_upload:.0f} MB lost. DQ - {DQ_UPLOAD_FAIL_PENALTY}")
+            self._log(f"[FAIL] Upload failed - {mb_to_upload:.0f} MB lost. DQ - {DQ_UPLOAD_FAIL_PENALTY}")
         
     def _update_data_quality(self, delta_minutes: float):
         if self.sample_interval > 30:
@@ -285,7 +285,7 @@ class Node:
         new_cap = BATTERY_CAPACITIES[self.battery_level - 1]
         self.battery_max = new_cap
         msg = f"Battery upgraded to L{self.battery_level} ({new_cap} units max)."
-        self._log("🔋" + msg)
+        self._log("[BAT]" + msg)
         return msg
     
     def upgrade_solar(self) -> str:
@@ -297,7 +297,7 @@ class Node:
         self.credits -= cost
         self.solar_level += 1
         msg = f"Solar panel upgraded to L{self.solar_level} (x{SOLAR_MULTIPLIERS[self.solar_level - 1]})."
-        self._log("☀️" + msg)
+        self._log("[SOL]" + msg)
         return msg
     
     def upgrade_antenna(self) -> str:
@@ -310,7 +310,7 @@ class Node:
         self.antenna_level += 1
         rate = ANTENNA_UPLOAD_SUCCESS[self.antenna_level - 1] * 100
         msg = f"Antenna upgraded to L{self.antenna_level} ({rate:.0f}% upload success)."
-        self._log("📡" + msg)
+        self._log("[ANT]" + msg)
         return msg 
     
     def fix_event(self, event_id: str) -> str:

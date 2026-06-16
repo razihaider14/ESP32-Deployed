@@ -11,10 +11,10 @@ WEATHER_TRANSITIONS = {
 }
 
 WEATHER_ICONS = {
-    "Sunny":"☀️",
-    "Cloudy": "⛅",
-    "Rainy": "🌧️",
-    "Storm": "⛈️",
+    "Sunny":"[Sun]",
+    "Cloudy": "[CLD]",
+    "Rainy": "[RAN]",
+    "Storm": "[STM]",
 }
 
 WEATHER_COLORS = {
