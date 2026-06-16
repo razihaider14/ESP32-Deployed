@@ -552,3 +552,172 @@ class DashboardUI:
         s.blit(Fonts.get(13, bold = True).render("Cancel", True, TEXT_SECONDARY), Fonts.get(13, bold = True).render("Cancel", True, TEXT_SECONDARY).get_rect(center = cn_r.center))
         self._btn("rename_cancel", cn_r)
         
+    # Game over screen:
+
+    def _draw_game_over(self, node):
+        s = self.screen
+        overlay = pygame.Surface((self.W, self.H), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 200))
+        s.blit(overlay, (0, 0))
+
+        cx, cy = self.W // 2, self.H // 2
+        if node.game_won:
+            title_col = ACCENT_GREEN
+            title_txt = "MISSION COMPLETE"
+            sub_txt = f"Node survived 365 days! Final credits: {node.credits:.2f}"
+        else:
+            title_col = ACCENT_RED
+            title_txt = "NODE OFFLINE"
+            sub_txt = node.lose_reason
+
+        t_surf = Fonts.get(42, bold = True).render(title_txt, True, title_col)
+        s.blit(t_surf, t_surf.get_rect(center = (cx, cy - 50)))
+        sub_s = Fonts.get(18).render(sub_txt, True, TEXT_SECONDARY)
+        s.blit(sub_s, sub_s.get_rect(center = (cx, cy + 20)))
+
+        restart_r = pygame.Rect(cx - 90, cy + 70, 180, 40)
+        draw_rounded_rect(s, ACCENT_BLUE, restart_r, radius = 8)
+        rs = Fonts.get(15, bold = True).render("Play Again", True, TEXT_WHITE)
+        s.blit(rs, rs.get_rect(center = restart_r.center))
+        self._btn("restart", restart_r)
+
+    # Feedback Flash:
+
+    def _draw_feedback(self):
+        alpha = min(225, self._feedback_timer * 5)
+        surf = Fonts.get(14, bold = True).render(self._feedback_msg, True, self._feedback_color)
+        x = self.W // 2 - surf.get_width() // 2
+        y = TOPBAR_HEIGHT + 12
+        self.screen.blit(surf, (x, y))
+
+    def flash(self, msg: str, color = None):
+        self._feedback_msg = msg
+        self._feedback_timer = 90
+        self._feedback_color = color or ACCENT_GREEN
+
+    # Input handling:
+
+    def handle_event(self, event, node) -> str | None:
+        self._node = node 
+
+        if event.type == pygame.KEYDOWN:
+            return self._handle_keydown(event, node)
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 4:
+                self.log_scroll = min(self.log_scroll + 2, max(0, len(node.log) - 5))
+            elif event.button == 5:
+                self.log_scroll = max(0, self.log_scroll - 2)
+            elif event.button == 1:
+                return self._handle_click(event.pos, node)
+            
+        return None
+    
+    def _handle_keydown(self, event, node):
+        if self.active_input == "rename":
+            if event.key == pygame.K_RETURN:
+                node.rename(self.rename_text)
+                self.rename_text = ""
+                self.show_rename_box = False
+                self.active_input = None
+            elif event.key == pygame.K_BACKSPACE:
+                self.rename_text = self.rename_text[:-1]
+            else:
+                if len(self.rename_text) < 24:
+                    self.rename_text += event.unicode
+            return None
+        
+        if self.active_input in ("sample", "upload"):
+            buf = self.active_input + "_input_text"
+            cur = getattr(self, buf)
+            if event.key == pygame.K_RETURN:
+                self._apply_settings(node)
+            elif event.key == pygame.K_ESCAPE:
+                self.active_input = None
+            elif event.key == pygame.K_BACKSPACE:
+                setattr(self, buf, cur[:-1])
+            elif event.unicode.isdigit():
+                setattr(self, buf, cur + event.unicode)
+            return None
+        
+        return None
+    
+    def _handle_click(self, pos, node):
+        for key, rect in self._btn_rects.items():
+            if rect.collidepoint(pos):
+                return self._dispatch(key, node)
+        return None
+    
+    def _dispatch(self, key, node):
+        if key == "rename":
+            self.rename_text = node.name
+            self.show_rename_box = True
+            self.active_input = "rename"
+
+        elif key == "rename_ok":
+            node.rename(self.rename_text)
+            self.rename_text = ""
+            self.show_rename_box = False 
+            self.active_input = None
+
+        elif key == "rename_cancel":
+            self.show_rename_box = False
+            self.active_input = None
+            self.rename_text = ""
+
+        elif key  == "sleep_toggle":
+            node.toggle_sleep()
+
+        elif key == "settings":
+            self.show_settings_panel = not self.show_settings_panel
+            if self.show_settings_panel:
+                self.sample_input_text = str(node.sample_interval)
+                self.upload_input_text = str(node.upload_interval)
+
+        elif key == "settings_apply":
+            self._apply_settings(node)
+
+        elif key == "settings_close":
+            self.show_settings_panel = False
+            self.active_input = None
+
+        elif key.startswith("input_"):
+            field = key[len("input_"):]
+            self.active_input = field
+
+        elif key.startswith("speed_"):
+            return "speed:" + key.split("_")[1]
+        
+        elif key == "upg_battery":
+            msg = node.upgrade_battery()
+            self.flash(msg, ACCENT_GREEN if "upgraded" in msg else ACCENT_RED)
+
+        elif key == "upg_solar":
+            msg = node.uprage_solar()
+            self.flash(msg, ACCENT_GREEN if "upgraded" in msg else ACCENT_RED)
+
+        elif key == "upg_antenna":
+            msg = node.upgrade_antenna()
+            self.flash(msg, ACCENT_GREEN if "upgraded" in msg else ACCENT_RED)
+
+        elif key == "evt_fix":
+            evt = node.events.pending_popup
+            if evt:
+                msg = node.fix_event(evt.id)
+                node.events.pending_popup = None
+                self.flash(msg, ACCENT_GREEN if "Fixed" in msg else ACCENT_RED)
+
+        elif key == "evt_ignore":
+            if node.events.pending_popup:
+                node.events.pending_popup.acknowledged = True
+                node.events.pending_popup = None
+
+        elif key == "event_panel":
+            if node.events.active_events:
+                node.events.pending_popup = node.events.active_events[0]
+
+        elif key == "restart":
+            return "restart"
+        
+        return None
+    
