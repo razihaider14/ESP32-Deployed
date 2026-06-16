@@ -15,7 +15,7 @@ class Node:
         self.antenna_level = 1
 
         # Battery:
-        self.battery_max = BATTERY_CAPACITIES[self.batter_level - 1]
+        self.battery_max = BATTERY_CAPACITIES[self.battery_level - 1]
         self.battery_units = float(BATTERY_START_UNITS)
 
         # Storage:
@@ -109,7 +109,7 @@ class Node:
             self._do_upload()
 
         # Data quality passives:
-        self._update_data_qualtiy(delta_minutes)
+        self._update_data_quality(delta_minutes)
 
         # Storage full penalty:
         if self.storage_used >= self.storage_max:
@@ -186,7 +186,7 @@ class Node:
             self.credits += reward 
             self.total_credits_earned += reward
             self.data_quality = min(DQ_MAX, self.data_quality + DQ_UPLOAD_SUCCESS_BONUS)
-            self.storage_usec = 0.0
+            self.storage_used = 0.0
             self.total_uploads_ok += 1
             self._log(f"✓ Upload OK - {mb_to_upload:.0f} MB | + {reward:.2f} credits")
         else:
