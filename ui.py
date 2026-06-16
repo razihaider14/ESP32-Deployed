@@ -721,3 +721,44 @@ class DashboardUI:
         
         return None
     
+    def _apply_settings(self, node):
+        try:
+            s = int(self.sample_input_text)
+            u = int(self.upload_input_text)
+            if s > 0:
+                node.set_sample_interval(s)
+            if u > 0:
+                node.set_upload_interval(u)
+            self.flash("Settings applied.", ACCENT_GREEN)
+        except ValueError:
+            self.flash("Invalid value - enter whole numbers.", ACCENT_RED)
+            self.active_input = None
+            self.show_settings_panel = False
+
+    def draw(self, node, speed_index: int):
+        self._node = node
+        self._btn_rects = {}
+
+        s = self.screen
+        s.fill(BG_DARK)
+
+        self._draw_topbar(node, speed_index)
+        self._draw_sidebar(node)
+        self._draw_main(node)
+
+        # Popups priority:
+        if node.events.pending_popup and not node.events.pending_popup.acknowledged:
+            self._draw_event_popup(s, node, node.events.pending_popup)
+        elif self.show_rename_box:
+            self._draw_rename_box(s)
+        elif self.show_settings_panel:
+            self._draw_settings_panel(s)
+
+        if node.game_over:
+            self._draw_game_over(node)
+
+        if self._feedback_timer > 0:
+            self._draw_feedback()
+            self._feedback_timer -= 1
+
+        pygame.display.flip()
