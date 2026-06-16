@@ -400,3 +400,155 @@ class DashboardUI:
         s.blit(l_s, (P + 10, y))
         s.blit(v_s, (SIDEBAR_WIDTH - P * 2 - v_s.get_width(), y))
         return y + 16
+    
+    # Popup event:
+
+    def _draw_event_popup(self, s, node, evt):
+        overlay = pygame.Surface((self.W, self.H), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 160))
+        s.blit(overlay, (0, 0))
+
+        pw, ph = 480, 280
+        px = (self.W - pw) // 2
+        py = (self.H - ph) // 2
+        popup = pygame.Rect(px, py, pw, ph)
+        draw_rounded_rect(s, BG_CARD, popup, radius = 12, border = 2, border_color = ACCENT_RED if evt.severity == "major" else ACCENT_YELLOW)
+
+        x, y = px + 20, py + 18
+        sev_col = ACCENT_RED if evt.severity == "major" else ACCENT_YELLOW
+        sev_lbl = "MAJOR EVENT" if evt.severity == "major" else "EVENT"
+        s.blit(Fonts.get(11, bold = True).render(sev_lbl, True, sev_col), (x, y))
+        y += 20
+        s.blit(Fonts.get(18, bold = True).render(evt.name, True, TEXT_PRIMARY), (x, y))
+        y += 30
+
+        # Wrap description:
+        desc = evt.description
+        words = desc.split()
+        lines = []
+        line = ""
+        for w in words:
+            test = (line + "" + w).strip()
+            if Fonts.get(13).size(test)[0] > pw - 40:
+                lines.append(line)
+                line = w
+            else:
+                line = test
+        if line:
+            lines.append(line)
+        for ln in lines:
+            s.blit(Fonts.get(13).render(ln, True, TEXT_SECONDARY), (x, y))
+            y += 20
+
+        y = py + ph - 70
+
+        # Penalties:
+        penalties = []
+        if evt.solar_penalty:
+            penalties.append(f"Solar - {evt.solar_penalty * 100:.0f}%")
+        if evt.upload_penalty:
+            penalties.append(f"Upload success - {evt.upload_penalty * 100:.0f}%")
+        if hasattr(evt, "dq_drain") and evt.dq_drain:
+            penalties.append(f"DQ drain + {evt.dq_drain:.2f}/min")
+        if penalties:
+            s.blit(Fonts.get(12).render("Penalties: " + " | ".join(penalties), True, ACCENT_ORANGE), (x, y))
+        y += 20
+
+        # Buttons:
+        fix_lbl = f"Fix({evt.fix_cost} credits)"
+        has_credits = node.credits >= evt.fix_cost
+
+        fix_r = pygame.Rect(px + 20, py + ph - 44, 180, 32)
+        ign_r = pygame.Rect(px + pw - 200, py + ph - 44, 180, 32)
+
+        fix_col = ACCENT_GREEN if has_credits else (50, 50, 50)
+        draw_rounded_rect(s, fix_col, fix_r, radius = 7)
+        fs = Fonts.get(13, bold = True).render(fix_lbl, True, TEXT_WHITE)
+        s.blit(fs, fs.get_rect(center = fix_r.center))
+        self._btn("evt_fix", fix_r)
+
+        draw_rounded_rect(s, BG_PANEL, ign_r, radius = 7, border = 1, border_color = BORDER_BRIGHT)
+        ig = Fonts.get(13, bol = True).render("Ignore (keep penalty)", True, TEXT_SECONDARY)
+        s.blit(ig, ig.get_rect(center = ign_r.center))
+        self._btn("evt_ignore", ign_r)
+
+    # Settings popup:
+
+    def _draw_settings_panel(self, s, node = None):
+        pw, ph = 420, 240
+        px = (self.W - pw) // 2
+        py = (self.H - ph) // 2
+        popup = pygame.Rect(px, py, pw, ph)
+
+        overlay = pygame.Surface((self.W, self.H), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 140))
+        s.blit(overlay, (0, 0))
+
+        draw_rounded_rect(s, BG_CARD, popup, radius = 12, border = 1, border_color = BORDER_BRIGHT)
+
+        x, y = px + 20, py + 18
+        s.blit(Fonts.get(15, bold = True).render("⚙️ Settings", True, TEXT_PRIMARY), (x, y))
+        y += 34
+
+        def input_row(label, buf_key, cur_val):
+            nonlocal y
+            s.blit(Fonts.get(13).render(label, True, TEXT_SECONDARY), (x, y))
+            inp_r = pygame.Rect(px + pw - 120 - 20, y- 3, 120, 26)
+            active = (self.active_input == buf_key)
+            draw_rounded_rect(s, BG_DARK if active else BG_PANEL, inp_r, radius = 5, border = 1, border_color = ACCENT_BLUE if active else BORDER_COLOR)
+            val = getattr(self, buf_key + "_input_text") if active \
+                  else str(cur_val)
+            ts = Fonts.get(13).render(val + ("|" if active else ""), True, TEXT_WHITE if active else TEXT_PRIMARY)
+            s.blit(ts, ts.get_rect(midleft = (inp_r.x + 8, inp_r.centery)))
+            self._btn("input_" + buf_key, inp_r)
+            y += 36
+
+        if hasattr(self, "_node"):
+            nd = self._node 
+            input_row("Sample interval (min)", "sample", nd.sample_interval)
+            input_row("Upload interval (min)", "upload", nd.upload_interval)
+
+        # Apply / Close:
+        apply_r = pygame.Rect(px + 20, py + ph - 44, 140, 32)
+        close_r = pygame.Rect(px + pw - 160, py + ph - 44, 140, 32)
+        draw_rounded_rect(s, ACCENT_BLUE, apply_r, radius = 7)
+        s.blit(Fonts.get(13, bold = True).render("Apply", True, TEXT_WHITE), Fonts.get(13, bold = True).render("Apply", True, TEXT_WHITE).get_rect(center = apply_r.center))
+        self._btn("settings_apply", apply_r)
+
+        draw_rounded_rect(s, BG_PANEL, close_r, radius = 7, border = 1, border_color = BORDER_COLOR)
+        s.blit(Fonts.get(13, bold = True).render("Close", True, TEXT_SECONDARY), Fonts.get(13, bold = True).render("Close", True, TEXT_SECONDARY).get_rect(center = close_r.center))
+        self._btn("settings_close", close_r)
+
+    # Rename popup:
+
+    def _draw_rename_box(self, s):
+        pw, ph = 380, 140
+        px = (self.W - pw) // 2
+        py = (self.H - ph) // 2
+        popup = pygame.Rect(px, py, pw, ph)
+
+        overlay = pygame.Surface((self.W, self.H), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 140))
+        s.blit(overlay, (0, 0))
+
+        draw_rounded_rect(s, BG_CARD, popup, radius = 12, border = 1, border_color = BORDER_BRIGHT)
+        x, y = px + 20, py + 20
+        s.blit(Fonts.get(14, bold = True).render("Rename Node", True, TEXT_PRIMARY), (x, y))
+        y += 32
+
+        inp_r = pygame.Rect(px + 20, y, pw - 40, 30)
+        draw_rounded_rect(s, BG_DARK, inp_r, radius = 5, border = 1, border_color = ACCENT_BLUE)
+        ts = Fonts.get(14).render(self.rename_text + "|", True, TEXT_WHITE)
+        s.blit(ts, ts.get_rect(midleft = (inp_r.x + 8, inp_r.centery)))
+        y += 44
+
+        ok_r = pygame.Rect(px + 20, y, 120, 30)
+        cn_r = pygame.Rect(px + pw - 140, y, 120, 30)
+        draw_rounded_rect(s, ACCENT_BLUE, ok_r, radius = 6)
+        s.blit(Fonts.get(13, bold = True).render("Rename", True, TEXT_WHITE), Fonts.get(12, bold = True).render("Rename", True, TEXT_WHITE).get_rect(center = ok_r.center))
+        self._btn("rename_ok", ok_r)
+
+        draw_rounded_rect(s, BG_PANEL, cn_r, radius = 6, border = 1, border_color = BORDER_COLOR)
+        s.blit(Fonts.get(13, bold = True).render("Cancel", True, TEXT_SECONDARY), Fonts.get(13, bold = True).render("Cancel", True, TEXT_SECONDARY).get_rect(center = cn_r.center))
+        self._btn("rename_cancel", cn_r)
+        
