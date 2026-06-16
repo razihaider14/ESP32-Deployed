@@ -123,7 +123,7 @@ class DashboardUI:
         # Status pill:
         status_color = STATUS_ONLINE if node.status_text == "ONLINE" else STATUS_SLEEPING
         pill = pygame.Rect(self.W // 2 - 50, 16, 100, 26)
-        draw_rounded_rect(s, status_color + (40,) if len(status_color) == 3 else status_color, pill, radius = 13)
+        draw_rounded_rect(s, BG_CARD, pill, radius = 13)
         pygame.draw.rect(s, status_color, pill, 1, border_radius = 13)
         status_surf = Fonts.get(13, bold = True).render(node.status_text, True, status_color)
         s.blit(status_surf, status_surf.get_rect(center = pill.center))
