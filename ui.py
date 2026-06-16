@@ -116,7 +116,7 @@ class DashboardUI:
 
         # Node name:
         name_surf = Fonts.get(14, bold = True).render(f"[EDIT] {node.name}", True, ACCENT_YELLOW)
-        name_rect = name_surf.get_rect(midleft = (170, TOPBAR_HEIGHT // 2))
+        name_rect = name_surf.get_rect(midleft = (220, TOPBAR_HEIGHT // 2))
         s.blit(name_surf, name_rect)
         self._btn("rename", name_rect.inflate(8, 6))
 
