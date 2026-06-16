@@ -14,12 +14,12 @@ def draw_rounded_rect(surf, color, rect, radius = CARD_RADIUS, border = 0, borde
 def bar_color(pct: float, reverse = False):
     if reverse:
         pct = 100 - pct
-        if pct > 60:
-            return ACCENT_GREEN
-        elif pct > 30:
-            return ACCENT_YELLOW
-        else:
-            return ACCENT_RED
+    if pct > 60:
+        return ACCENT_GREEN
+    elif pct > 30:
+        return ACCENT_YELLOW
+    else:
+        return ACCENT_RED
         
 # Font cache:
 
