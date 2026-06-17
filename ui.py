@@ -738,6 +738,8 @@ class DashboardUI:
             sys.exit()
 
         elif key == "restart":
+            if self._node.game_won:
+                return f"restart_win:{self._node.credits:.2f}"
             return "restart"
         
         return None

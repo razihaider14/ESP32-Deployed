@@ -30,6 +30,13 @@ def main():
                 node = Node()
                 ui = DashboardUI(screen)
                 speed_index = DEFAULT_SPEED_INDEX
+            elif result and result.startswith("restart_win:"):
+                carried_credits = float(result.split(":")[1])
+                node = Node()
+                node.credits = node.credits + carried_credits
+                node._log(f"[INFO] Carried over {carried_credits:.2f} credits from last run!")
+                ui = DashboardUI(screen)
+                speed_index = idx
             elif result and result.startswith("speed:"):
                 idx = int(result.split(":")[1])
                 speed_index = idx
