@@ -405,7 +405,7 @@ class DashboardUI:
         fill_w = int(bar_rect.width * _clamp(pct, 0, 100) / 100)
         if fill_w > 0:
             draw_rounded_rect(s, color, pygame.Rect(bar_rect.x, bar_rect.y, fill_w, 6), radius = 3)
-            return y + 12
+        return y + 12
         
     def _label_row(self, s, label, value, y):
         P = CARD_PADDING
