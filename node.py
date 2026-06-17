@@ -292,6 +292,10 @@ class Node:
         self.battery_max = new_cap
         msg = f"Battery upgraded to L{self.battery_level} ({new_cap} units max)."
         self._log("[BAT]" + msg)
+        for evt in self.events.active_events[:]:
+            if evt.id == "battery_damage":
+                self.events.active_events.remove(evt)
+                self._log(f"[INFO] Upgrade cleared event: {evt.name}")
         return msg
     
     def upgrade_solar(self) -> str:
@@ -304,6 +308,10 @@ class Node:
         self.solar_level += 1
         msg = f"Solar panel upgraded to L{self.solar_level} (x{SOLAR_MULTIPLIERS[self.solar_level - 1]})."
         self._log("[SOL]" + msg)
+        for evt in self.events.active_events[:]:
+            if evt.id in ("light_dust", "heavy_dust", "solar_damage"):
+                self.events.active_events.remove(evt)
+                self._log(f"[INFO] Upgrade cleared event: {evt.name}")
         return msg
     
     def upgrade_antenna(self) -> str:
@@ -317,6 +325,10 @@ class Node:
         rate = ANTENNA_UPLOAD_SUCCESS[self.antenna_level - 1] * 100
         msg = f"Antenna upgraded to L{self.antenna_level} ({rate:.0f}% upload success)."
         self._log("[ANT]" + msg)
+        for evt in self.events.active_events[:]:
+            if evt.id in ("bird_nest", "wifi_minor", "wifi_major"):
+                self.events.active_events.remove(evt)
+                self._log(f"[INFO] Upgrade cleared event: {evt.name}")
         return msg 
     
     def fix_event(self, event_id: str) -> str:
