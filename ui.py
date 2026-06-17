@@ -573,7 +573,7 @@ class DashboardUI:
     def _draw_game_over(self, node):
         s = self.screen
         overlay = pygame.Surface((self.W, self.H), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 200))
+        overlay.fill((0, 0, 0, 220))
         s.blit(overlay, (0, 0))
 
         cx, cy = self.W // 2, self.H // 2
