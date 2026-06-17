@@ -484,7 +484,7 @@ class DashboardUI:
         self._btn("evt_fix", fix_r)
 
         draw_rounded_rect(s, BG_PANEL, ign_r, radius = 7, border = 1, border_color = BORDER_BRIGHT)
-        ig = Fonts.get(13, bol = True).render("Ignore (keep penalty)", True, TEXT_SECONDARY)
+        ig = Fonts.get(13, bold = True).render("Ignore (keep penalty)", True, TEXT_SECONDARY)
         s.blit(ig, ig.get_rect(center = ign_r.center))
         self._btn("evt_ignore", ign_r)
 
