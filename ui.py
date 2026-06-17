@@ -130,9 +130,10 @@ class DashboardUI:
 
         # Day / Time:
         time_txt = f"Day {node.day} {node.time_string()}"
-        daytime_flag = "☀️ Day" if node._is_daytime() else "🌙 Night"
+        daytime_flag = "[DAY]" if node._is_daytime() else "[NIGHT]"
+        season_txt = f"{daytime_flag} | {node.weather.season}"
         s.blit(Fonts.get(15, bold = True).render(time_txt, True, TEXT_PRIMARY), (self.W - 310, 10))
-        s.blit(Fonts.get(12).render(daytime_flag, True, TEXT_SECONDARY), (self.W - 310, 30))
+        s.blit(Fonts.get(12).render(season_txt, True, TEXT_SECONDARY), (self.W - 310, 30))
 
         # Speen controls:
         speeds = TIME_SPEEDS

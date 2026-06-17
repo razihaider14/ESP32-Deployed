@@ -83,7 +83,7 @@ class Node:
 
         # Subsystems:
         current_hour = (self.game_time_minutes % (24 * 60)) / 60
-        self.weather.update(delta_minutes, current_hour)
+        self.weather.update(delta_minutes, current_hour, self.day)
         if self.weather.current == "Rainy" or self.weather.current == "Storm":
             for evt in self.events.active_events[:]:
                 if evt.id in ("light_dust", "heavy_dust"):

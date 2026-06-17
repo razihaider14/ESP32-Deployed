@@ -3,12 +3,15 @@ from constants import SOLAR_BASE_PER_HOUR
 
 WEATHER_TYPES = ["Sunny", "Cloudy", "Rainy", "Storm"]
 
-WEATHER_TRANSITIONS = {
-    "Sunny": {"Sunny": 0.60, "Cloudy": 0.30, "Rainy": 0.08, "Storm": 0.02},
-    "Cloudy": {"Sunny": 0.25, "Cloudy": 0.40, "Rainy": 0.30, "Storm": 0.05},
-    "Rainy": {"Sunny": 0.10, "Cloudy": 0.35, "Rainy": 0.40, "Storm": 0.15},
-    "Storm": {"Sunny": 0.05, "Cloudy": 0.20, "Rainy": 0.40, "Storm": 0.35},
+SEASON_TRANSITIONS = {
+    "Spring": {"Sunny": 0.40, "Cloudy": 0.35, "Rainy": 0.20, "Storm": 0.05},
+    "Summer": {"Sunny": 0.65, "Cloudy": 0.20, "Rainy": 0.10, "Storm": 0.05},
+    "Autumn": {"Sunny": 0.25, "Cloudy": 0.40, "Rainy": 0.25, "Storm": 0.10},
+    "Winter": {"Sunny": 0.20, "Cloudy": 0.35, "Rainy": 0.30, "Storm": 0.15},
 }
+
+SEASON_NAMES = ["Spring", "Summer", "Autumn", "Winter"]
+SEASON_LENGTH_DAYS = 365 / 4
 
 WEATHER_ICONS = {
     "Sunny":"[Sun]",
@@ -30,16 +33,21 @@ class WeatherSystem:
     def __init__(self):
         self.current = "Sunny"
         self.minutes_since_change = 0
+        self.season = random.choice(SEASON_NAMES)
 
-    def update(self, delta_minutes: float, current_hour: float = 12):
+    def update(self, delta_minutes: float, current_hour: float = 12, current_day: int = 1):
         self.minutes_since_change += delta_minutes
         self._current_hour = current_hour
+
+        season_index = int((current_day - 1) / SEASON_LENGTH_DAYS) % 4
+        self.season = SEASON_NAMES[season_index]
+        
         if self.minutes_since_change >= WEATHER_CHANGE_INTERVAL:
             self.minutes_since_change = 0
             self._transition()
 
     def _transition(self):
-        probs = WEATHER_TRANSITIONS[self.current]
+        probs = SEASON_TRANSITIONS[self.season]
         roll = random.random()
         cumulative = 0.0
         for weather, prob in probs.items():
