@@ -82,7 +82,8 @@ class Node:
             self._log(f"Day {self.day} begins.")
 
         # Subsystems:
-        self.weather.update(delta_minutes)
+        current_hour = (self.game_time_minutes % (24 * 60)) / 60
+        self.weather.update(delta_minutes, current_hour)
         event_msgs = self.events.update(delta_minutes)
         for m in event_msgs:
             self._log(m)

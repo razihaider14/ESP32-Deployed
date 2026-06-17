@@ -31,8 +31,9 @@ class WeatherSystem:
         self.current = "Sunny"
         self.minutes_since_change = 0
 
-    def update(self, delta_minutes: float):
+    def update(self, delta_minutes: float, current_hour: float = 12):
         self.minutes_since_change += delta_minutes
+        self._current_hour = current_hour
         if self.minutes_since_change >= WEATHER_CHANGE_INTERVAL:
             self.minutes_since_change = 0
             self._transition()
@@ -45,8 +46,13 @@ class WeatherSystem:
             cumulative += prob
             if roll<= cumulative:
                 self.current = weather
-                return
-        self.current = list(probs.keys())[-1]
+                break
+        else:
+            self.current = list(probs.keys())[-1]
+
+        hour = (self._current_hour) if hasattr(self, '_current_hour') else 12
+        if self.current == "Sunny" and not (6 <= hour < 18):
+            self.current = "Cloudy"
 
     def get_solar_base(self) -> float:
         return SOLAR_BASE_PER_HOUR.get(self.current, 0.0)
