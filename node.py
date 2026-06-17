@@ -84,6 +84,11 @@ class Node:
         # Subsystems:
         current_hour = (self.game_time_minutes % (24 * 60)) / 60
         self.weather.update(delta_minutes, current_hour)
+        if self.weather.current == "Rainy" or self.weather.current == "Storm":
+            for evt in self.events.active_events[:]:
+                if evt.id in ("light_dust", "heavy_dust"):
+                    self.events.active_events.remove(evt)
+                    self._log(f"[INFO] Rain washed away: {evt.name}")
         event_msgs = self.events.update(delta_minutes)
         for m in event_msgs:
             self._log(m)
