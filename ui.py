@@ -121,7 +121,12 @@ class DashboardUI:
         self._btn("rename", name_rect.inflate(8, 6))
 
         # Status pill:
-        status_color = STATUS_ONLINE if node.status_text == "ONLINE" else STATUS_SLEEPING
+        if node.status_text == "ONLINE":
+            status_color = STATUS_ONLINE
+        elif node.status_text == "SLEEPING":
+            status_color = STATUS_SLEEPING
+        else:
+            status_color = ACCENT_YELLOW
         pill = pygame.Rect(self.W // 2 - 50, 16, 100, 26)
         draw_rounded_rect(s, BG_CARD, pill, radius = 13)
         pygame.draw.rect(s, status_color, pill, 1, border_radius = 13)

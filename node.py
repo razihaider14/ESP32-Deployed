@@ -1,6 +1,6 @@
 import random
 from constants import (
-    BATTERY_CAPACITIES, BATTERY_START_UNITS, STORAGE_CAPACITY_MB, DATA_QUALITY_START, CREDITS_START, AWAKE_DRAIN_PER_MINUTE, SLEEP_DRAIN_PER_MINUTE, SAMPLE_ENERGY_COST, SAMPLE_DATA_MB, UPLOAD_BASE_COST, UPLOAD_PER_MB_COST, ANTENNA_UPLOAD_SUCCESS, ANTENNA_COST_MULTIPLIER, SOLAR_MULTIPLIERS, UPGRADE_COSTS, DQ_SAMPLE_BONUS, DQ_UPLOAD_SUCCESS_BONUS, DQ_UPLOAD_FAIL_PENALTY, DQ_IDLE_PENALTY_PER_MIN, DQ_STORAGE_FULL_PENALTY, DQ_MIN, DQ_MAX, UPLOAD_REWARD_DIVISOR, DEFAULT_SAMPLE_INTERVAL_MIN, DEFAULT_UPLOAD_INTERVAL_MIN, DEFAULT_SLEEP_DURATION_MIN, DEFAULT_NODE_NAME, LOSE_BATTERY, LOSE_DQ, LOSE_STORAGE_FULL_DAYS, WIN_DAY,
+    BATTERY_CAPACITIES, BATTERY_START_UNITS, STORAGE_CAPACITY_MB, DATA_QUALITY_START, CREDITS_START, AWAKE_DRAIN_PER_MINUTE, SLEEP_DRAIN_PER_MINUTE, AUTO_SLEEP_DRAIN_PER_MINUTE, SAMPLE_ENERGY_COST, SAMPLE_DATA_MB, UPLOAD_BASE_COST, UPLOAD_PER_MB_COST, ANTENNA_UPLOAD_SUCCESS, ANTENNA_COST_MULTIPLIER, SOLAR_MULTIPLIERS, UPGRADE_COSTS, DQ_SAMPLE_BONUS, DQ_UPLOAD_SUCCESS_BONUS, DQ_UPLOAD_FAIL_PENALTY, DQ_IDLE_PENALTY_PER_MIN, DQ_STORAGE_FULL_PENALTY, DQ_MIN, DQ_MAX, UPLOAD_REWARD_DIVISOR, DEFAULT_SAMPLE_INTERVAL_MIN, DEFAULT_UPLOAD_INTERVAL_MIN, DEFAULT_SLEEP_DURATION_MIN, DEFAULT_NODE_NAME, LOSE_BATTERY, LOSE_DQ, LOSE_STORAGE_FULL_DAYS, WIN_DAY,
 )
 from weather import WeatherSystem
 from events import EventSystem
@@ -95,7 +95,12 @@ class Node:
             self._log(m)
 
         # Power drain:
-        drain_rate = SLEEP_DRAIN_PER_MINUTE if self.sleeping else AWAKE_DRAIN_PER_MINUTE 
+        if self.auto_sleep:
+            drain_rate = AUTO_SLEEP_DRAIN_PER_MINUTE
+        elif self.sleeping:
+            drain_rate = SLEEP_DRAIN_PER_MINUTE
+        else:
+            drain_rate = AWAKE_DRAIN_PER_MINUTE
         self._drain_battery(drain_rate * delta_minutes)
 
         # Solar charging:
@@ -108,10 +113,8 @@ class Node:
             about_to_upload = self._upload_timer >= self.upload_interval 
             if about_to_sample <= 0 or about_to_upload <= 0:
                 self.sleeping = False
-                self.status_text = "ONLINE"
             else:
                 self.sleeping = True 
-                self.status_text = "SLEEPING"
         
         # Sampling:
         if not self.sleeping:
@@ -139,7 +142,12 @@ class Node:
         self.data_quality = max(DQ_MIN, min(DQ_MAX, self.data_quality))
 
         # Status text:
-        self.status_text = "SLEEPING" if self.sleeping else "ONLINE"
+        if self.auto_sleep:
+            self.status_text = "AUTO"
+        elif self.sleeping:
+            self.status_text = "SLEEPING"
+        else:
+            self.status_text = "ONLINE"
 
         # Check lose/win conditions:
         self._check_conditions()
