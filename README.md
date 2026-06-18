@@ -12,7 +12,7 @@
 
 But it's not that simple.
 
-Your node runs on a battery charged by a solar panel. It samples data, stores it, and uploads over Wi-Fi. Weather changes. Dust accumulates on your solar panel. Birds nest on you antenna. Wi-Fi towers go down. Batteris get damaged. And through all of it, you have to manage your energy, your storage, your data quality, and your credits by balancing upgrades and repairs.
+Your node runs on a battery charged by a solar panel. It samples data, stores it, and uploads over Wi-Fi. Weather changes. Dust accumulates on your solar panel. Birds nest on you antenna. Wi-Fi towers go down. Batteries get damaged. And through all of it, you have to manage your energy, your storage, your data quality, and your credits by balancing upgrades and repairs.
 
 This is not an action game. It's a slow, strategic simulation where every decision compounds over time. Sleep the node too long and your data quality crumbles. Sample too aggressively and your battery dies before sunrise. Ignore an event and watch your upload success rate nosedive. 
 
@@ -22,7 +22,7 @@ This is not an action game. It's a slow, strategic simulation where every decisi
 
 ### Option 1: Download and Play (Windows only)
 
-1. Download the executeable direclty: 
+1. Download the executable directly: 
     **[Download ESP32-Deployed.exe](https://github.com/razihaider14/ESP32-Deployed/releases/download/v1.0/ESP32-Deployed.exe)**
 
 2. Double click the downloaded `ESP32-Deployed.exe` to launch.
@@ -40,7 +40,7 @@ This is not an action game. It's a slow, strategic simulation where every decisi
 
 #### Steps
 
-1. **Clone or dowload the repo**
+1. **Clone or download the repo**
 ```
 git clone https://github.com/razihaider14/ESP32-Deployed.git
 ```
@@ -80,8 +80,8 @@ requirements.txt
 ### IoT Dashboard Interface
 The game uses a clean, modern dashboard UI inspired by Home Assistant and Grafana. Everything is kept visible at a glance; battery, storage, data quality, credits, solar input, weather, time, season, node status, upgrades, and a live event log. No menus to dig through. No hidden stats.
 
-### Node Mnagement
-- **Rename you node** : click the `[EDIT]` tag next to the node name in the top bar to give your node a custom name at any time.
+### Node Management
+- **Rename your node** : click the `[EDIT]` tag next to the node name in the top bar to give your node a custom name at any time.
 - **Node status** : the status pill in the top center shows `ONLINE`, `SLEEPING`, or `AUTO` at all times.
 - **Manual sleep** : put the node to sleep manually to conserve battery at the cost of data quality.
 - **Auto sleep mode** : enable auto sleep and the node will automatically sleep between tasks, waking only when a sample or upload is due. Saves significant battery with a small data quality tradeoff.
