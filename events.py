@@ -84,9 +84,9 @@ class EventSystem:
             if evt.id == event_id:
                 if credits >= evt.fix_cost:
                     self.active_events.remove(evt)
-                    return True, evt.fix_cost, f"✓ Fixed: {evt.name}"
+                    return True, evt.fix_cost, f"[OK] Fixed: {evt.name}"
                 else:
-                    return False, 0, f"✗ Not enough credits to fix {evt.name}"
+                    return False, 0, f"[Fail] Not enough credits to fix {evt.name}"
         return False, 0, "Event not found."
     
     def dismiss_popup(self):
