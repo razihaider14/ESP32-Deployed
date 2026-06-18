@@ -108,8 +108,10 @@ class Node:
             about_to_upload = self._upload_timer >= self.upload_interval 
             if about_to_sample <= 0 or about_to_upload <= 0:
                 self.sleeping = False
+                self.status_text = "ONLINE"
             else:
                 self.sleeping = True 
+                self.status_text = "SLEEPING"
         
         # Sampling:
         if not self.sleeping:
@@ -213,7 +215,9 @@ class Node:
             self._log(f"[FAIL] Upload failed - {mb_to_upload:.0f} MB lost. DQ - {DQ_UPLOAD_FAIL_PENALTY}")
         
     def _update_data_quality(self, delta_minutes: float):
-        if self.sleeping:
+        if self.auto_sleep:
+            self.data_quality -= DQ_IDLE_PENALTY_PER_MIN * 0.5 * delta_minutes
+        elif self.sleeping:
             self.data_quality -= DQ_IDLE_PENALTY_PER_MIN * 2.0 * delta_minutes
         if self.sample_interval > 30:
             extra = (self.sample_interval - 30) / 30.0
