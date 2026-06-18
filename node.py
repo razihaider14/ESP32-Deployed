@@ -290,7 +290,8 @@ class Node:
         self.battery_level += 1
         new_cap = BATTERY_CAPACITIES[self.battery_level - 1]
         self.battery_max = new_cap
-        msg = f"Battery upgraded to L{self.battery_level} ({new_cap} units max)."
+        self.battery_units = float(new_cap)
+        msg = f"Battery upgraded to L{self.battery_level} ({new_cap} units max). Fully recharged."
         self._log("[BAT]" + msg)
         for evt in self.events.active_events[:]:
             if evt.id == "battery_damage":
