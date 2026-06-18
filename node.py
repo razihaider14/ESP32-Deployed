@@ -198,6 +198,7 @@ class Node:
         else:
             #Failure:
             self.data_quality = max(DQ_MIN, self.data_quality - DQ_UPLOAD_FAIL_PENALTY)
+            self.storage_used = 0.0
             self.total_uploads_fail += 1
             self._log(f"[FAIL] Upload failed - {mb_to_upload:.0f} MB lost. DQ - {DQ_UPLOAD_FAIL_PENALTY}")
         
