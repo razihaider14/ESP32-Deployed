@@ -445,7 +445,7 @@ class DashboardUI:
         lines = []
         line = ""
         for w in words:
-            test = (line + "" + w).strip()
+            test = (line + " " + w).strip()
             if Fonts.get(13).size(test)[0] > pw - 40:
                 lines.append(line)
                 line = w
