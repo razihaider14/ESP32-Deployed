@@ -204,7 +204,16 @@ class DashboardUI:
         sv = Fonts.get(13, bold = True).render(sleep_lbl, True, TEXT_WHITE)
         s.blit(sv, sv.get_rect(center = sleep_rect.center))
         self._btn("sleep_toggle", sleep_rect)
-        y += 40
+        y += 38
+
+        auto_col = ACCENT_GREEN if node.auto_sleep else BG_CARD
+        auto_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 - 8, 28)
+        draw_rounded_rect(s, auto_col, auto_rect, radius = 7, border = 1, border_color = ACCENT_GREEN)
+        auto_lbl = "Auto Sleep: ON" if node.auto_sleep else "Auto Sleep: OFF"
+        av  = Fonts.get(12, bold = True).render(auto_lbl, True, TEXT_WHITE)
+        s.blit(av, av.get_rect(center = auto_rect.center))
+        self._btn("auto_sleep_toggle", auto_rect)
+        y += 36
 
         # Settings button:
         stg_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 -8, 32)
@@ -684,8 +693,11 @@ class DashboardUI:
             self.active_input = None
             self.rename_text = ""
 
-        elif key  == "sleep_toggle":
+        elif key == "sleep_toggle":
             node.toggle_sleep()
+
+        elif key == "auto_sleep_toggle":
+            node.toggle_auto_sleep()
 
         elif key == "settings":
             self.show_settings_panel = not self.show_settings_panel

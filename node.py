@@ -38,6 +38,7 @@ class Node:
         # State:
         self.sleeping = False
         self.status_text = "ONLINE"
+        self.auto_sleep = False
         
         # Storage-full tracking:
         self._storage_full_minutes = 0.0
@@ -101,6 +102,15 @@ class Node:
         if self._is_daytime():
             self._do_solar(delta_minutes)
 
+        #Auto sleep logic:
+        if self.auto_sleep:
+            time_to_sample = self.sample_interval - self._sample_timer
+            time_to_upload = self.upload_interval - self._upload_timer
+            if time_to_sample <= 0 or time_to_upload <= 0:
+                self.sleeping = False
+            else:
+                self.sleeping = True 
+        
         # Sampling:
         if not self.sleeping:
             self._sample_timer += delta_minutes
@@ -277,6 +287,11 @@ class Node:
         self.sleeping = not self.sleeping
         state = "SLEEPING" if self.sleeping else "AWAKE"
         self._log(f"Node set to {state}.")
+
+    def toggle_auto_sleep(self):
+        self.auto_sleep = not self.auto_sleep 
+        state = "ON" if self.auto_sleep else "OFF"
+        self._log(f"Auto sleep mode {state}.")
 
     def rename(self, new_name: str):
         if new_name.strip():
