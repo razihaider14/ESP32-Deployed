@@ -223,13 +223,15 @@ class DashboardUI:
         y += 40
 
         # Active events indicator:
-        if node.events.active_events:
+        for i, evt in enumerate(node.events.active_events):
             evt_rect = pygame.Rect(P + 4, y, SIDEBAR_WIDTH - P * 2 - 8, 32)
-            draw_rounded_rect(s, (80, 30, 20), evt_rect, radius = 7, border = 1, border_color = ACCENT_RED)
-            ec = len(node.events.active_events)
-            ev = Fonts.get(13, bold = True).render(f"[!] {ec} Active Event{'s' if ec > 1 else ''}", True, ACCENT_RED)
+            sev_col = ACCENT_RED if evt.severity == "major" else ACCENT_YELLOW
+            draw_rounded_rect(s, (50, 20, 10), evt_rect, radius = 7, border = 1, border_color = sev_col)
+            label = f"[!] {evt.name[:22]}"
+            ev = Fonts.get(11, bold = True).render(label, True, sev_col)
             s.blit(ev, ev.get_rect(center = evt_rect.center))
-            self._btn("events_panel", evt_rect)
+            self._btn(f"events_panel_{i}", evt_rect)
+            y += 38
 
     # Main area:
 
@@ -729,9 +731,12 @@ class DashboardUI:
                 node.events.pending_popup.acknowledged = True
                 node.events.pending_popup = None
 
-        elif key == "event_panel":
-            if node.events.active_events:
-                node.events.pending_popup = node.events.active_events[0]
+        elif key.startswith("events_panel_"):
+            idx = int(key.split("_")[2])
+            if idx < len(node.events.active_events):
+                evt = node.events.active_events[idx]
+                evt.acknowledged = False
+                node.events.pending_popup = evt 
 
         elif key == "quit":
             pygame.quit()
