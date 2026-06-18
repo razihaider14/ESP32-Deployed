@@ -203,6 +203,8 @@ class Node:
             self._log(f"[FAIL] Upload failed - {mb_to_upload:.0f} MB lost. DQ - {DQ_UPLOAD_FAIL_PENALTY}")
         
     def _update_data_quality(self, delta_minutes: float):
+        if self.sleeping:
+            self.data_quality -= DQ_IDLE_PENALTY_PER_MIN * 2.0 * delta_minutes
         if self.sample_interval > 30:
             extra = (self.sample_interval - 30) / 30.0
             self.data_quality -= DQ_IDLE_PENALTY_PER_MIN * extra * delta_minutes 
