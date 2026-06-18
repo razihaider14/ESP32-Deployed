@@ -104,9 +104,9 @@ class Node:
 
         #Auto sleep logic:
         if self.auto_sleep:
-            time_to_sample = self.sample_interval - self._sample_timer
-            time_to_upload = self.upload_interval - self._upload_timer
-            if time_to_sample <= 0 or time_to_upload <= 0:
+            about_to_sample = self._sample_timer >= self.sample_interval
+            about_to_upload = self._upload_timer >= self.upload_interval 
+            if about_to_sample <= 0 or about_to_upload <= 0:
                 self.sleeping = False
             else:
                 self.sleeping = True 
@@ -284,6 +284,9 @@ class Node:
         self._log(f"Upload interval set to {self.upload_interval} min.")
 
     def toggle_sleep(self):
+        if self.auto_sleep:
+            self._log("[!] Disable auto sleep first.")
+            return
         self.sleeping = not self.sleeping
         state = "SLEEPING" if self.sleeping else "AWAKE"
         self._log(f"Node set to {state}.")
