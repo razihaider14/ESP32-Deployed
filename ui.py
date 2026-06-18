@@ -785,4 +785,12 @@ class DashboardUI:
             self._draw_feedback()
             self._feedback_timer -= 1
 
+        # Cursor change on hover:
+        mouse_pos = pygame.mouse.get_pos()
+        hovering = any(rect.collidepoint(mouse_pos) for rect in self._btn_rects.values())
+        if hovering:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
         pygame.display.flip()
